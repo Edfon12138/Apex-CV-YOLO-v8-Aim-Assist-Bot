@@ -6,6 +6,7 @@ import win32con
 from pynput import keyboard, mouse
 import winsound
 import time
+from aim.ghub_mouse import *
 
 detecting = False
 listening = True
@@ -66,25 +67,25 @@ def listen_k_press(key):
     #     detecting = False
     #     left_lock = not left_lock
     #     winsound.Beep(800 if left_lock else 400, 200)
-    if key == keyboard.Key.right:
-        detecting = False
-        right_lock = not right_lock
-        winsound.Beep(900 if right_lock else 500, 200)
-    if key == keyboard.Key.up:  # AUTO_FIRE is detected by EAC
-        detecting = False
-        auto_fire = not auto_fire
-        winsound.Beep(850 if auto_fire else 450, 200)
-    if not caps_lock:
-        if key == keyboard.KeyCode.from_char('1') or key == keyboard.KeyCode.from_char('2'):
-            if not left_lock:
-                detecting = False
-                left_lock = True
-                winsound.Beep(800, 100)
-        if key == keyboard.KeyCode.from_char('g'):
-            if left_lock:
-                detecting = False
-                left_lock = False
-                winsound.Beep(400, 100)
+    # if key == keyboard.Key.right:
+    #     detecting = False
+    #     right_lock = not right_lock
+    #     winsound.Beep(900 if right_lock else 500, 200)
+    # if key == keyboard.Key.up:  # AUTO_FIRE is detected by EAC
+    #     detecting = False
+    #     auto_fire = not auto_fire
+    #     winsound.Beep(850 if auto_fire else 450, 200)
+    # if not caps_lock:
+    #     if key == keyboard.KeyCode.from_char('1') or key == keyboard.KeyCode.from_char('2'):
+    #         if not left_lock:
+    #             detecting = False
+    #             left_lock = True
+    #             winsound.Beep(800, 100)
+    #     if key == keyboard.KeyCode.from_char('g'):
+    #         if left_lock:
+    #             detecting = False
+    #             left_lock = False
+    #             winsound.Beep(400, 100)
 
 
 def listen_k_release(key):
@@ -180,24 +181,30 @@ def move_mouse(args):
         if norm > width*args.aim_fov: return
         if args.pid:
             move = PID(args, mouse_vector)
-            win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, int(move[0]), int(move[1] / 2))
+            # win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, int(move[0]), int(move[1] / 2))
+            mouse_xy(int(move[0]), int(move[1] / 2))
             last_mv = last - destination + mouse_vector
             if not auto_fire or time.time()-time_fire <= 0.125: return  # 125ms
             # norm <= width/2  # higher divisor increases precision but limits fire rate
             # move[0]*last_mv[0] >= 0  # ensures tracking
-            if ( shift_pressed and not right_lock and mouse2_pressed and not mouse1_pressed  # scope fire
-            and norm <= width*2/3 and move[0]*last_mv[0] >= 0 ):
-                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-                time_fire = time.time()
-                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
-            elif ( ((shift_pressed and not mouse2_pressed) or (right_lock and mouse2_pressed and not mouse1_pressed))  # hip fire
-            and norm <= width*3/4 and move[0]*last_mv[0] >= 0 ):
-                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-                time_fire = time.time()
-                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
+            
+            
+            #自动开火
+            # if ( shift_pressed and not right_lock and mouse2_pressed and not mouse1_pressed  # scope fire
+            # and norm <= width*2/3 and move[0]*last_mv[0] >= 0 ):
+            #     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+            #     time_fire = time.time()
+            #     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
+            # elif ( ((shift_pressed and not mouse2_pressed) or (right_lock and mouse2_pressed and not mouse1_pressed))  # hip fire
+            # and norm <= width*3/4 and move[0]*last_mv[0] >= 0 ):
+            #     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+            #     time_fire = time.time()
+            #     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
+            
             return
         if norm <= width*4/3:
-            win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, int(mouse_vector[0] / 3), int(mouse_vector[1] / 3))
+            # win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, int(mouse_vector[0] / 3), int(mouse_vector[1] / 3))
+            mouse_xy(int(mouse_vector[0] / 3), int(mouse_vector[1] / 3))
             return
     else:
         pre_error = integral = np.array([0., 0.])
