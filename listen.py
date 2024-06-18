@@ -58,11 +58,11 @@ def listen_k_press(key):
         winsound.Beep(700, 100)
         winsound.Beep(600, 100)
         return False
-    if key == keyboard.Key.shift:
-        shift_pressed = True
-        if not detecting:
-            detecting = True
-            print("Start detection: ", detecting)
+    # if key == keyboard.Key.shift:
+    #     shift_pressed = True
+    #     if not detecting:
+    #         detecting = True
+    #         print("Start detection: ", detecting)
     # if key == keyboard.Key.left:
     #     detecting = False
     #     left_lock = not left_lock
@@ -112,6 +112,14 @@ def listen_m_click(x, y, button, pressed):
     #         if not shift_pressed and (not right_lock or (right_lock and not mouse2_pressed)):
     #             detecting = False
     #             print("Start detection: ", detecting)
+    if button == mouse.Button.x1:
+        if pressed:
+            if left_lock:
+                winsound.Beep(800,300)
+            elif not left_lock:
+                winsound.Beep(1600,300)
+            left_lock= not left_lock
+    
     if button == mouse.Button.left:
         if pressed:
             mouse1_pressed = True
